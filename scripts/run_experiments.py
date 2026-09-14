@@ -270,7 +270,8 @@ def plot_gamma_sweep(stats: dict, chosen: float) -> None:
     for g, sx, my in zip(gammas, std, mean):
         if g in (gammas[0], gammas[-1], chosen):
             note = " (chosen)" if g == chosen else ""
-            ax.annotate(f"γ = {g:g}{note}", (sx, my), xytext=(7, 5), textcoords="offset points",
+            offset = (8, -14) if g == chosen else (7, 5)
+            ax.annotate(f"γ = {g:g}{note}", (sx, my), xytext=offset, textcoords="offset points",
                         fontsize=8.5, color=INK_2)
     style_axes(ax, "Risk vs. return", "Std dev of session P&L (ticks)", "Mean P&L per session (ticks)")
     ax.grid(axis="x", color=GRID, linewidth=0.6)
