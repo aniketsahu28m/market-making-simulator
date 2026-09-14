@@ -107,6 +107,16 @@ def test_market_order_drops_unfilled_quantity(book):
     assert book.get_order(order.order_id) is None
 
 
+def test_ioc_limit_fills_up_to_limit_and_drops_rest(book):
+    book.submit_limit("a", Side.SELL, 100, 2)
+    book.submit_limit("b", Side.SELL, 102, 5)
+    order, trades = book.submit_limit("buyer", Side.BUY, 101, 10, ioc=True)
+    assert [(t.price, t.quantity) for t in trades] == [(100, 2)]
+    assert order.remaining == 8
+    assert book.best_bid() is None
+    assert book.best_ask() == 102
+
+
 def test_market_order_on_empty_book(book):
     order, trades = book.submit_market("buyer", Side.BUY, 5)
     assert trades == []

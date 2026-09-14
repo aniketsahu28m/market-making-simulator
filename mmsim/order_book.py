@@ -64,14 +64,17 @@ class OrderBook:
     # ---- order entry ---------------------------------------------------------
 
     def submit_limit(
-        self, trader_id: str, side: Side, price: int, quantity: int
+        self, trader_id: str, side: Side, price: int, quantity: int, ioc: bool = False
     ) -> tuple[Order, list[Trade]]:
-        """Match against the book, then rest any unfilled quantity at `price`."""
+        """Match against the book, then rest any unfilled quantity at `price`.
+
+        With `ioc` (immediate-or-cancel), unfilled quantity is dropped instead of resting.
+        """
         if not isinstance(price, int) or price <= 0:
             raise ValueError(f"price must be a positive integer tick, got {price!r}")
         order = self._new_order(trader_id, side, price, quantity)
         trades = self._match(order)
-        if order.remaining > 0:
+        if order.remaining > 0 and not ioc:
             self._rest(order)
         return order, trades
 
